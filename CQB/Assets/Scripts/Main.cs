@@ -43,13 +43,21 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Interaction")]
     public float interactionRange = 3f;
-    public LayerMask Weapons;
+    public LayerMask Interactables;
     public InteractableObject interactableObject;
 
     [Header("Ammo")]
-    public int weapon1Ammo; 
-    public int weapon2Ammo;
-    public int weapon3Ammo;
+    public int M1911Ammo = 21; 
+    public int M4A1Ammo = 60;
+    public int FNSCARAmmo = 60;
+    public int ShotGunAmmo = 8;
+    public int HK416Ammo = 60;
+    public int SIGMPXAmmo = 60;
+    public int LeverActionAmmo = 18;
+
+    [Header("Guns")]
+    public Firearm firearm;
+    public int weaponIndexToUnlock;
 
     void Start()
     {
@@ -159,26 +167,34 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
+            Debug.Log("Key F pressed. Starting interaction...");
+
             Ray ray = new Ray(camera.transform.position, camera.transform.forward);
             RaycastHit hitinfo;
 
+            Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red, 2f); 
 
-            if (Physics.Raycast(ray, out hitinfo, interactionRange, Weapons))
+            if (Physics.Raycast(ray, out hitinfo, interactionRange, Interactables))
             {
+                Debug.Log($"Raycast hit: {hitinfo.collider.name}");
+
                 InteractableObject interactableObject = hitinfo.collider.GetComponent<InteractableObject>();
                 if (interactableObject != null)
                 {
+                    Debug.Log("Interactable object found. Interacting...");
                     interactableObject.Interact();
-                    hitinfo.collider.transform.SetParent(gunTransform);
                 }
                 else
                 {
+                    Debug.Log("Hit object is not an interactable object.");
                 }
             }
             else
             {
+                Debug.Log("Raycast did not hit any objects in the Weapons layer.");
             }
         }
+
 
     }
 
@@ -186,9 +202,9 @@ public class PlayerMovement : MonoBehaviour
     {
         return weaponID switch
         {
-            0 => weapon1Ammo,
-            1 => weapon2Ammo,
-            2 => weapon3Ammo,
+            0 => M1911Ammo,
+            1 => M4A1Ammo,
+            2 => FNSCARAmmo,
             _ => 0 
         };
     }
@@ -198,13 +214,13 @@ public class PlayerMovement : MonoBehaviour
         switch (weaponID)
         {
             case 0:
-                weapon1Ammo = Mathf.Max(0, weapon1Ammo - amount);
+                M1911Ammo = Mathf.Max(0, M1911Ammo - amount);
                 break;
             case 1:
-                weapon2Ammo = Mathf.Max(0, weapon2Ammo - amount);
+                M4A1Ammo = Mathf.Max(0, M4A1Ammo - amount);
                 break;
             case 2:
-                weapon3Ammo = Mathf.Max(0, weapon3Ammo - amount);
+                FNSCARAmmo = Mathf.Max(0, FNSCARAmmo - amount);
                 break;
         }
     }
