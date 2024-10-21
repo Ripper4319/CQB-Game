@@ -1,4 +1,7 @@
+using System.Collections;
+using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -45,15 +48,28 @@ public class PlayerMovement : MonoBehaviour
     public float interactionRange = 3f;
     public LayerMask Interactables;
     public InteractableObject interactableObject;
+    public TextMeshProUGUI interactionText;
+    public TextMeshProUGUI secondaryInteractionText;
 
     [Header("Ammo")]
     public int M1911Ammo = 21; 
     public int M4A1Ammo = 60;
     public int FNSCARAmmo = 60;
-    public int ShotGunAmmo = 8;
     public int HK416Ammo = 60;
     public int SIGMPXAmmo = 60;
-    public int LeverActionAmmo = 18;
+    public int M906Ammo;
+
+    [Header("Shake")]
+    public Transform mainCameraTransform;
+    public Transform secondaryCameraTransform;
+    public float gunShakeIntensity = 2f;
+    public float shakeDuration = 0.5f;
+    private Vector3 originalMainCameraPosition;
+    private Quaternion originalMainCameraRotation;
+    private Vector3 originalSecondaryCameraPosition;
+    private Quaternion originalSecondaryCameraRotation;
+    private Coroutine currentShakeRoutine;
+
 
     [Header("Guns")]
     public Firearm firearm;
@@ -61,6 +77,11 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+        originalMainCameraPosition = mainCameraTransform.localPosition;
+        originalMainCameraRotation = mainCameraTransform.localRotation;
+        originalSecondaryCameraPosition = secondaryCameraTransform.localPosition;
+        originalSecondaryCameraRotation = secondaryCameraTransform.localRotation;
+
         controller = GetComponent<CharacterController>();
         originalHeight = controller.height;
         Cursor.lockState = CursorLockMode.Locked;
@@ -167,31 +188,43 @@ public class PlayerMovement : MonoBehaviour
 
         if (Input.GetKeyDown(KeyCode.F))
         {
-            Debug.Log("Key F pressed. Starting interaction...");
-
             Ray ray = new Ray(camera.transform.position, camera.transform.forward);
             RaycastHit hitinfo;
 
-            Debug.DrawRay(ray.origin, ray.direction * interactionRange, Color.red, 2f); 
-
             if (Physics.Raycast(ray, out hitinfo, interactionRange, Interactables))
             {
-                Debug.Log($"Raycast hit: {hitinfo.collider.name}");
-
                 InteractableObject interactableObject = hitinfo.collider.GetComponent<InteractableObject>();
                 if (interactableObject != null)
                 {
-                    Debug.Log("Interactable object found. Interacting...");
                     interactableObject.Interact();
-                }
-                else
-                {
-                    Debug.Log("Hit object is not an interactable object.");
+                    interactionText.gameObject.SetActive(false);
                 }
             }
             else
             {
-                Debug.Log("Raycast did not hit any objects in the Weapons layer.");
+                interactionText.gameObject.SetActive(false);
+            }
+        }
+        else
+        {
+            Ray ray = new Ray(camera.transform.position, camera.transform.forward);
+            RaycastHit hitinfo;
+
+            if (Physics.Raycast(ray, out hitinfo, interactionRange, Interactables))
+            {
+                InteractableObject interactableObject = hitinfo.collider.GetComponent<InteractableObject>();
+                if (interactableObject != null)
+                {
+                    interactionText.gameObject.SetActive(true);
+                    interactionText.text = "F";
+                    secondaryInteractionText.gameObject.SetActive(true); 
+                    secondaryInteractionText.text = "Use: " + hitinfo.collider.name;
+                }
+            }
+            else
+            {
+                interactionText.gameObject.SetActive(false);
+                secondaryInteractionText.gameObject.SetActive(false);
             }
         }
 
@@ -202,10 +235,13 @@ public class PlayerMovement : MonoBehaviour
     {
         return weaponID switch
         {
-            0 => M1911Ammo,
-            1 => M4A1Ammo,
-            2 => FNSCARAmmo,
-            _ => 0 
+            0 => M1911Ammo,      // M1911
+            1 => M4A1Ammo,      // M4
+            2 => FNSCARAmmo,     // FN SCAR
+            3 => HK416Ammo,      // HK416
+            4 => SIGMPXAmmo,     // SIG MPX
+            7 => M906Ammo,       // M-906
+            _ => 0
         };
     }
 
@@ -222,6 +258,43 @@ public class PlayerMovement : MonoBehaviour
             case 2:
                 FNSCARAmmo = Mathf.Max(0, FNSCARAmmo - amount);
                 break;
+        }
+    }
+
+    public void TriggerShake(Transform cameraTransform, float intensity, float duration)
+    {
+        if (currentShakeRoutine != null) StopCoroutine(currentShakeRoutine);
+        currentShakeRoutine = StartCoroutine(Shake(cameraTransform, intensity, duration));
+    }
+
+    private IEnumerator Shake(Transform cameraTransform, float intensity, float duration)
+    {
+        float elapsed = 0f;
+
+        while (elapsed < duration)
+        {
+            elapsed += Time.deltaTime;
+            Vector3 randomOffset = Random.insideUnitSphere * intensity;
+            cameraTransform.localPosition = (cameraTransform == mainCameraTransform) ?
+                originalMainCameraPosition + randomOffset :
+                originalSecondaryCameraPosition + randomOffset;
+            yield return null;
+        }
+
+        ResetShake(cameraTransform);
+    }
+
+    private void ResetShake(Transform cameraTransform)
+    {
+        if (cameraTransform == mainCameraTransform)
+        {
+            cameraTransform.localPosition = originalMainCameraPosition;
+            cameraTransform.localRotation = originalMainCameraRotation;
+        }
+        else if (cameraTransform == secondaryCameraTransform)
+        {
+            cameraTransform.localPosition = originalSecondaryCameraPosition;
+            cameraTransform.localRotation = originalSecondaryCameraRotation;
         }
     }
 
