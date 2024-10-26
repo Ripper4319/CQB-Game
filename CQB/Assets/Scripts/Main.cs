@@ -62,8 +62,8 @@ public class PlayerMovement : MonoBehaviour
     [Header("Shake")]
     public Transform mainCameraTransform;
     public Transform secondaryCameraTransform;
-    public float gunShakeIntensity = 2f;
-    public float shakeDuration = 0.5f;
+    public float gunShakeIntensity = 0.5f;
+    public float shakeDuration = 0.1f;
     private Vector3 originalMainCameraPosition;
     private Quaternion originalMainCameraRotation;
     private Vector3 originalSecondaryCameraPosition;
@@ -77,6 +77,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Start()
     {
+
         originalMainCameraPosition = mainCameraTransform.localPosition;
         originalMainCameraRotation = mainCameraTransform.localRotation;
         originalSecondaryCameraPosition = secondaryCameraTransform.localPosition;

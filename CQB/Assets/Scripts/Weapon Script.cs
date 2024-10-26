@@ -62,6 +62,12 @@ public class Firearm : MonoBehaviour
     [Header("Weapon Mags")]
     public List<List<Magazine>> weaponMagazines;
     private int currentMagazineIndex = 0;
+    private bool isReloading1 = false;
+
+
+    [Header("UI Elements")]
+    public TextMeshProUGUI ammoText; 
+    private bool isReloading = false;
 
 
     private void Start()
@@ -125,7 +131,6 @@ public class Firearm : MonoBehaviour
         {
             if (weapons.Length > i && weaponUnlocked[i])
             {
-                Debug.Log($"Weapon {i} is unlocked and can be switched.");
                 if (Input.GetKeyDown(KeyCode.Alpha1 + i))
                 {
                     SwitchWeapon(i);
@@ -137,12 +142,22 @@ public class Firearm : MonoBehaviour
             }
         }
 
-        if(Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
         {
-            Reload();
+            ShowAmmoPrompt();
+        }
+        else if (Input.GetKey(KeyCode.R) && !isReloading)
+        {
+            isReloading = true;
+            StartCoroutine(ReloadCoroutine());
+        }
+        else if (Input.GetKeyUp(KeyCode.R))
+        {
+            isReloading = false;
+            ammoText.gameObject.SetActive(false); 
         }
 
-        if (Input.GetMouseButtonDown(0) && currentAmmo > 0)
+        if (Input.GetMouseButton(0) && currentAmmo > 0 && CanFire && !isReloading1)
         {
             if(currentClip > 0)
             {
@@ -151,7 +166,7 @@ public class Firearm : MonoBehaviour
             }
             else
             {
-                Reload();
+                StartCoroutine(ReloadCoroutine());
             }
             
         }
@@ -280,6 +295,12 @@ public class Firearm : MonoBehaviour
         }
     }
 
+    private void ShowAmmoPrompt()
+    {
+        ammoText.text = $" {currentClip}"; 
+        ammoText.gameObject.SetActive(true); 
+    }
+
 
     public void SwitchWeapon(int weaponIndex)
     {
@@ -316,9 +337,12 @@ public class Firearm : MonoBehaviour
         }
     }
 
-    public void Reload()
+    private IEnumerator ReloadCoroutine()
     {
-        if (currentClip >= clipSize) return;
+        isReloading = true;
+        ammoText.gameObject.SetActive(false); 
+
+        yield return new WaitForSeconds(2f); 
 
         int reloadCount = clipSize - currentClip;
         int availableAmmo = playerAmmo.GetCurrentAmmo(weaponID);
@@ -333,6 +357,8 @@ public class Firearm : MonoBehaviour
             currentClip += reloadCount;
             playerAmmo.DecreaseAmmo(weaponID, reloadCount);
         }
+
+        isReloading = false;
     }
 
     private IEnumerator CooldownFire()
