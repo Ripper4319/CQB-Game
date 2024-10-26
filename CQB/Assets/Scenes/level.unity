@@ -2791,9 +2791,23 @@ MonoBehaviour:
   LeftLegMultiplier: 0.75
   RightLegMultiplier: 0.75
   BellyMultiplier: 1
-  bodyPartMapping: 
-  rb: []
-  colliders: []
+  bodyPartMapping: 00000000010000000200000003000000040000000500000006000000
+  rb:
+  - {fileID: 1851580175}
+  - {fileID: 1262221543}
+  - {fileID: 921637479}
+  - {fileID: 1948877021}
+  - {fileID: 1229737040}
+  - {fileID: 2105182728}
+  - {fileID: 334290825}
+  colliders:
+  - {fileID: 1851580176}
+  - {fileID: 1262221545}
+  - {fileID: 921637481}
+  - {fileID: 1948877023}
+  - {fileID: 1229737042}
+  - {fileID: 2105182730}
+  - {fileID: 334290826}
   character: {fileID: 1175952130}
   playerLastSeen: {fileID: 1139383286}
   shot: {fileID: 2770885537797968350, guid: 339bc5b848a2e0d48affc42687ccf60b, type: 3}
@@ -2968,6 +2982,10 @@ PrefabInstance:
     - target: {fileID: 5744346692429604696, guid: db5c25d645b658648b3fe7a24122878a, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8302757440636497758, guid: db5c25d645b658648b3fe7a24122878a, type: 3}
+      propertyPath: m_Constraints
+      value: 84
       objectReference: {fileID: 0}
     - target: {fileID: 8654225739282394539, guid: db5c25d645b658648b3fe7a24122878a, type: 3}
       propertyPath: m_Name
