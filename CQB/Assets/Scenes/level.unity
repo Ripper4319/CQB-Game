@@ -2715,7 +2715,7 @@ GameObject:
   - component: {fileID: 1034790793}
   - component: {fileID: 1034790798}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Enemy
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2772,26 +2772,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   player: {fileID: 1574653637}
+  player1: {fileID: 1574653639}
   playerRigidbody: {fileID: 8302757440636497758, guid: db5c25d645b658648b3fe7a24122878a, type: 3}
   agent: {fileID: 1034790793}
   head: {fileID: 1940573453}
   health: 3
   maxHealth: 5
   damageGiven: 1
-  damageReceived: 1
-  pushBackForce: 10000
-  hit: 0
-  player1: {fileID: 1574653639}
   detectionRange: 10
-  bulletsfired: 0
-  HeadMultiplier: 2
-  TorsoMultiplier: 1
-  LeftArmMultiplier: 0.5
-  RightArmMultiplier: 0.5
-  LeftLegMultiplier: 0.75
-  RightLegMultiplier: 0.75
-  BellyMultiplier: 1
-  bodyPartMapping: 00000000010000000200000003000000040000000500000006000000
   rb:
   - {fileID: 1851580175}
   - {fileID: 1262221543}
@@ -2809,18 +2797,11 @@ MonoBehaviour:
   - {fileID: 2105182730}
   - {fileID: 334290826}
   character: {fileID: 1175952130}
-  playerLastSeen: {fileID: 1139383286}
+  playerLastSeen: {fileID: 1139383289}
   shot: {fileID: 2770885537797968350, guid: 339bc5b848a2e0d48affc42687ccf60b, type: 3}
-  gunTransform: {fileID: 1111304247}
-  muzzleFlashPrefab: {fileID: 299742238984793876, guid: ddde71bdc105f4840acfd4fcf3239671, type: 3}
-  shotVel: 10
-  bulletsToFire: 1
-  fireRate: 0.5
   FirePoint: {fileID: 1111304247}
-  Firepoint: {fileID: 1111304246}
-  bulletLifespan: 0
-  normalFOV: 50
-  engageFOV: 270
+  shotVel: 10
+  fireRate: 0.5
   maxAmmo: 3000
   clipSize: 30
 --- !u!4 &1044659793 stripped
@@ -2996,9 +2977,9 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: db5c25d645b658648b3fe7a24122878a, type: 3}
---- !u!1 &1139383286 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 8654225739282394539, guid: db5c25d645b658648b3fe7a24122878a, type: 3}
+--- !u!4 &1139383289 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 5744346692429604696, guid: db5c25d645b658648b3fe7a24122878a, type: 3}
   m_PrefabInstance: {fileID: 1139383285}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &1143146142
