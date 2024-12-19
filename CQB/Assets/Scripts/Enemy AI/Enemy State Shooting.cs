@@ -1,119 +1,113 @@
 using UnityEngine;
-using System.Collections;
 
 public class AttackState : IEnemyState
 {
-    // -----------------------------------------------
-    // UNMADE VARIABLES AREA
-    // -----------------------------------------------
-
     // Prefabs
-    public GameObject muzzleFlashPrefab;  // Prefab for the muzzle flash effect
-    public GameObject shot;              // Prefab for the projectile or shot fired
-    public Transform gunTransform;       // The transform of the gun or weapon firing the shot
+    private GameObject muzzleFlashPrefab;
+    private GameObject shotPrefab;
+    private Transform gunTransform;
 
     // Firing parameters
-    public float shotVel = 10f;          // Shot velocity (speed of the fired projectile)
-    private int currentClip = 30;        // Current number of shots in the clip (example: 30 rounds in the magazine)
-    private int clipSize = 30;           // Max size of the clip
-    private bool isReloading = false;    // Whether the gun is currently reloading
+    public float shotVel = 10f;
+    private int currentClip = 30;
+    private int clipSize = 30;
+    public float shotsFired;
 
     // Timing
-    private float attackCooldown = 1f;   // The cooldown time between attacks
-    private float lastAttackTime = 0f;   // The time when the last attack happened (used for cooldown)
+    private float attackCooldown = 1f;
+    private float lastAttackTime = 0f;
 
-    // -----------------------------------------------
-    // METHODS
-    // -----------------------------------------------
+    private float rotationSpeed = 5f;
+
+    public void start()
+    {
+        shotsFired = 0;
+    }
+
+    public AttackState(GameObject muzzleFlash, GameObject shot, Transform gun)
+    {
+        muzzleFlashPrefab = muzzleFlash;
+        shotPrefab = shot;
+        gunTransform = gun;
+    }
 
     public void Enter(Enemy enemy)
     {
-        // Reset or initialize any necessary values when entering the Attack state.
-        lastAttackTime = Time.time; // Ensures the attack starts with the correct cooldown
+        lastAttackTime = Time.time; // Initialize cooldown timer
     }
 
     public void Execute(Enemy enemy)
     {
-        if (enemy.player == null) return;
+        if (enemy.playerlastseen == null) return;
 
-        // Check if enough time has passed to attack (Cooldown)
+        // Rotate towards the player
+        Vector3 directionToPlayer = (enemy.playerlastseen.position - enemy.transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
+        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+
+        // Check if the enemy is facing the player (angle check)
+        float angleToPlayer = Vector3.Angle(enemy.transform.forward, directionToPlayer);
+        if (angleToPlayer > 5f) return; // Wait until the enemy is facing the player
+
+        // Check if enough time has passed to attack (cooldown)
         if (Time.time - lastAttackTime > attackCooldown)
         {
-            if (currentClip > 0)
+            if (currentClip > 0 && shotsFired < 3) // Limit to 3 shots before switching state
             {
-                if (currentClip > 0)
-                {
-                    Fire(enemy); // Pass the enemy reference
-                }
-                // Fire a shot
+                Fire(enemy);
+                shotsFired++;
+            }
+            else if (shotsFired >= 3)
+            {
+                enemy.SwitchState(new ChaseState()); // Switch to ChaseState after 3 shots
+
+                shotsFired = 0;
             }
             else
             {
-                // Reload if out of ammo
-                if (!isReloading)
-                {
-                    // Start reloading if not already reloading
-                    enemy.StartCoroutine(Reload());
-                }
+                enemy.SwitchState(new ReloadState()); // Switch to ReloadState when out of ammo
             }
 
-            lastAttackTime = Time.time; // Update last attack time to the current time
+            lastAttackTime = Time.time; // Reset cooldown
         }
     }
 
+
     private void Fire(Enemy enemy)
     {
-        if (isReloading) return;
-
-        if (muzzleFlashPrefab == null || shot == null || gunTransform == null)
+        if (muzzleFlashPrefab == null || shotPrefab == null || gunTransform == null)
         {
             Debug.LogError("References are missing!");
             return;
         }
 
-        // Use the enemy object to handle instantiation and destruction
+        // Instantiate muzzle flash and projectile
         GameObject muzzleFlash = Object.Instantiate(muzzleFlashPrefab, gunTransform.position, gunTransform.rotation);
-        GameObject projectile = Object.Instantiate(shot, gunTransform.position, gunTransform.rotation);
+        GameObject projectile = Object.Instantiate(shotPrefab, gunTransform.position, gunTransform.rotation);
+
         Rigidbody rb = projectile.GetComponent<Rigidbody>();
         if (rb != null)
         {
             rb.AddForce(gunTransform.forward * shotVel, ForceMode.Impulse);
         }
 
+        // Clean up
         Object.Destroy(projectile, 5f);
         Object.Destroy(muzzleFlash, 0.1f);
 
-        currentClip--; // Decrease ammo count
-    }
-
-
-
-    public IEnumerator Reload()
-    {
-        isReloading = true; // Mark as reloading
-
-        // Simulate reload time (2 seconds for this example)
-        yield return new WaitForSeconds(2f);
-
-        // Reload the clip
-        currentClip = clipSize; // Set the clip back to full size
-
-        isReloading = false; // Mark as done reloading
-    }
-
-    private void Attack(Enemy enemy)
-    {
-        // The core attack logic goes here.
-        Debug.Log("Attacking Player!");
-
-        // Example: Apply damage to the player (you can define damage logic here)
-        // player.GetComponent<PlayerHealth>().TakeDamage(10);
+        currentClip--; // Reduce ammo count
     }
 
     public void Exit(Enemy enemy)
     {
-        // Cleanup or reset values when exiting the AttackState
+        // Cleanup if necessary when exiting AttackState
+    }
+
+    public void RefillAmmo()
+    {
+        currentClip = clipSize; // Refill ammo to full clip size
     }
 }
+
 
 

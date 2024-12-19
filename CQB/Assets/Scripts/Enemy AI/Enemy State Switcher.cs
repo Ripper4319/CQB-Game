@@ -3,30 +3,61 @@ using UnityEngine;
 public class Enemy : MonoBehaviour
 {
     public IEnemyState currentState; // Current state of the enemy
-    public Transform player; // Reference to the player
+    public Transform playerlastseen; // Reference to the playerlastseen
+    public Transform player;
     public float detectionRange = 10f; // Distance at which the enemy starts detecting the player
     public float attackRange = 2f; // Distance at which the enemy attacks the player
     public float moveSpeed = 3f; // Movement speed of the enemy
+    public Transform Enemybody;
     public Transform head;
+    internal object playerlastSeen;
+    public float playerLastSeenSpeed;
+
+    public GameObject muzzleFlashPrefab;
+    public GameObject shot;
+    public Transform gunTransform;
+
+    [Header("Enemy damage")]
+    [SerializeField] private float HeadMultiplier = 2;
+    [SerializeField] private float TorsoMultiplier = 1;
+    [SerializeField] private float LeftArmMultiplier = 0.5f;
+    [SerializeField] private float RightArmMultiplier = 0.5f;
+    [SerializeField] private float LeftLegMultiplier = 0.75f;
+    [SerializeField] private float RightLegMultiplier = 0.75f;
+    [SerializeField] private float BellyMultiplier = 1;
+    //[SerializeField] public BodyPart[] bodyPartMapping;
+
+    [Header("Enemy ragdoll")]
+    [SerializeField] private Rigidbody[] rb;
+    [SerializeField] private Collider[] colliders;
+    [SerializeField] private Animator character;
+
 
     private void Start()
     {
         currentState = new PatrolState(); // Default state is PatrolState
         currentState.Enter(this); // Enter the Patrol state at the beginning
+
+        foreach (Rigidbody rb in rb)
+        {
+            rb.isKinematic = true;
+        }
+
+        foreach (Collider col in colliders)
+        {
+            col.enabled = false;
+        }
+
     }
 
     private void Update()
     {
         currentState.Execute(this); // Execute the current state's behavior
 
-        if (player == null)
-        {
-            Debug.LogError("Player reference is missing!");
-            return;
-        }
 
 
-        // Get the distance between the enemy and the player
+
+        // Determine next action based on distance to the player
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
         if (distanceToPlayer <= detectionRange)
@@ -34,21 +65,36 @@ public class Enemy : MonoBehaviour
             Vector3 directionToPlayer = (player.position - head.position).normalized;
             float angleToPlayer = Vector3.Angle(head.forward, directionToPlayer);
 
-            if (angleToPlayer < 50f) // Adjust based on your FOV
+            if (angleToPlayer < 50f) // Field of view check
             {
                 if (Physics.Raycast(head.position, directionToPlayer, out RaycastHit hit, detectionRange))
                 {
                     if (hit.collider.CompareTag("Player"))
                     {
-                        SwitchState(new AttackState());
+                        // Update playerLastSeen position
+                        if (playerlastseen != null)
+                        {
+                            playerlastseen.position = player.position; // Assign the player's current position
+                        }
 
-                        //playerLastSeen.transform.position = hit.point;
-                        //playerLastSeenTimer = 0f; // Reset timer on player sight
+                        // Assign the player's speed to a variable on playerLastSeen
+                        Rigidbody playerRigidbody = player.GetComponent<Rigidbody>();
+                        if (playerRigidbody != null)
+                        {
+                            // Calculate speed as magnitude of velocity
+                            float playerSpeed = playerRigidbody.velocity.magnitude;
+                            playerLastSeenSpeed = playerSpeed; // Store the speed in a variable (add this field to Enemy)
+                        }
+
+                        // Switch to attack state
+                        SwitchState(new AttackState(muzzleFlashPrefab, shot, gunTransform));
+
+                        return;
                     }
                 }
             }
         }
-    
+
         // If the player is within detection range but not in attack range, switch to ChaseState
         else if (distanceToPlayer <= detectionRange)
         {

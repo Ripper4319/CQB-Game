@@ -19,6 +19,15 @@ public class PatrolState : IEnemyState
             // After a short time, choose a new patrol point
             patrolPoint = enemy.transform.position + new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5));
         }
+
+
+       
+
+
+        // Otherwise, transition to the Patrol state
+        enemy.SwitchState(new PatrolState());
+        return;
+
     }
 
     public void Exit(Enemy enemy) { }
