@@ -2,13 +2,9 @@ using UnityEngine;
 
 public class InvestigateState : IEnemyState
 {
-    public Vector3 investigationPoint;  // Point where the enemy investigates
-    private float turnSpeed = 2f;        // Speed of turning
-    private bool isLookingAround = false;
-    private Quaternion initialRotation; // Original head rotation
-    private Quaternion leftRotation;    // Left turn rotation
-    private Quaternion rightRotation;   // Right turn rotation
-    private int rotationPhase = 0;      // Tracks the current phase of the head turning
+    public Vector3 investigationPoint; // Point where the enemy investigates
+    private float rotationSpeed = 2f;  // Speed of turning
+    private bool interrupted = false;
 
     public InvestigateState(Vector3 point)
     {
@@ -17,62 +13,37 @@ public class InvestigateState : IEnemyState
 
     public void Enter(Enemy enemy)
     {
-        // Move towards the investigation point
-        enemy.transform.position = Vector3.MoveTowards(enemy.transform.position, investigationPoint, enemy.moveSpeed * Time.deltaTime);
-
-        // Setup the rotation points
-        initialRotation = enemy.Enemybody.rotation;
-        leftRotation = Quaternion.Euler(initialRotation.eulerAngles.x, initialRotation.eulerAngles.y - 90f, initialRotation.eulerAngles.z);
-        rightRotation = Quaternion.Euler(initialRotation.eulerAngles.x, initialRotation.eulerAngles.y + 90f, initialRotation.eulerAngles.z);
+        // Reset interrupted flag when entering the state
+        interrupted = false;
 
         Debug.Log("Enemy has entered InvestigateState.");
     }
 
     public void Execute(Enemy enemy)
     {
-        if (!isLookingAround)
+        if (interrupted) return; // Stop processing if interrupted
+
+        // Move towards the investigation point first
+        enemy.transform.position = Vector3.MoveTowards(enemy.transform.position, investigationPoint, enemy.moveSpeed * Time.deltaTime);
+
+        // Investigate by rotating towards the investigation point
+        Vector3 direction = (investigationPoint - enemy.transform.position).normalized;
+        Quaternion targetRotation = Quaternion.LookRotation(direction);
+
+        // Smooth rotation towards the target point
+        enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
+
+        // Check if the enemy has reached the investigation point or close to it
+        if (Vector3.Distance(enemy.transform.position, investigationPoint) < 0.5f &&
+            Vector3.Angle(enemy.transform.forward, direction) < 5f)
         {
-            isLookingAround = true;
-            rotationPhase = 0;
+            // Once the enemy has arrived and facing the point, switch to Idle or Patrol
+            enemy.SwitchState(new IdleState());
         }
-
-        // Rotate the head
-        switch (rotationPhase)
-        {
-            case 0: // Turn left
-                enemy.Enemybody.rotation = Quaternion.Slerp(enemy.Enemybody.rotation, leftRotation, turnSpeed * Time.deltaTime);
-                if (Quaternion.Angle(enemy.Enemybody.rotation, leftRotation) < 1f)
-                    rotationPhase++;
-                break;
-
-            case 1: // Turn right
-                enemy.Enemybody.rotation = Quaternion.Slerp(enemy.Enemybody.rotation, rightRotation, turnSpeed * Time.deltaTime);
-                if (Quaternion.Angle(enemy.Enemybody.rotation, rightRotation) < 1f)
-                    rotationPhase++;
-                break;
-
-            case 2: // Return to initial rotation
-                enemy.Enemybody.rotation = Quaternion.Slerp(enemy.Enemybody.rotation, initialRotation, turnSpeed * Time.deltaTime);
-                if (Quaternion.Angle(enemy.Enemybody.rotation, initialRotation) < 1f)
-                {
-                    // Finish investigation
-                    Debug.Log("Investigation complete. Returning to another state.");
-                   // if (previousState is PatrolState)
-                   //    enemy.SwitchState(new PatrolState());
-                  //  else
-                        enemy.SwitchState(new IdleState());
-
-                }
-                break;
-        }
-
-
-
     }
 
     public void Exit(Enemy enemy)
     {
-        // Cleanup or reset any investigation-specific values
-        Debug.Log("Enemy exited InvestigateState.");
+        interrupted = true; // Stop the rotation when exiting the state
     }
 }

@@ -64,6 +64,8 @@ public class AttackState : IEnemyState
             }
 
             lastAttackTime = Time.time; // Reset cooldown
+
+            enemy.isshooting = false;
         }
     }
 

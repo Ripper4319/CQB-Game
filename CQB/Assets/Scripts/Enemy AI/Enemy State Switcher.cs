@@ -14,6 +14,8 @@ public class Enemy : MonoBehaviour
     public float playerLastSeenSpeed;
     public Animator Animator;
 
+    public bool isshooting = false;
+
     public GameObject muzzleFlashPrefab;
     public GameObject shot;
     public Transform gunTransform;
@@ -63,51 +65,9 @@ public class Enemy : MonoBehaviour
         // Determine next action based on distance to the player
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
-        if (distanceToPlayer <= detectionRange)
-        {
-            Vector3 directionToPlayer = (player.position - head.position).normalized;
-            float angleToPlayer = Vector3.Angle(head.forward, directionToPlayer);
+        DetectPlayer();
 
-            if (angleToPlayer < 50f) // Field of view check
-            {
-                if (Physics.Raycast(head.position, directionToPlayer, out RaycastHit hit, detectionRange))
-                {
-                    if (hit.collider.CompareTag("Player"))
-                    {
-                        // Update playerLastSeen position
-                        if (playerlastseen != null)
-                        {
-                            playerlastseen.position = player.position; // Assign the player's current position
-                        }
 
-                        // Assign the player's speed to a variable on playerLastSeen
-                        Rigidbody playerRigidbody = player.GetComponent<Rigidbody>();
-                        if (playerRigidbody != null)
-                        {
-                            // Calculate speed as magnitude of velocity
-                            float playerSpeed = playerRigidbody.velocity.magnitude;
-                            playerLastSeenSpeed = playerSpeed; // Store the speed in a variable (add this field to Enemy)
-                        }
-
-                        // Switch to attack state
-                        SwitchState(new AttackState(muzzleFlashPrefab, shot, gunTransform));
-
-                        return;
-                    }
-                }
-            }
-        }
-
-        // If the player is within detection range but not in attack range, switch to ChaseState
-        else if (distanceToPlayer <= detectionRange)
-        {
-            SwitchState(new ChaseState()); // Switch to ChaseState if player is detected but not close enough to attack
-        }
-        // If the player is out of range, switch to IdleState
-        else
-        {
-            SwitchState(new IdleState()); // Switch to IdleState when the player is out of range
-        }
     }
 
     private void DetectPlayer()
@@ -125,9 +85,26 @@ public class Enemy : MonoBehaviour
                 if (hit.collider.CompareTag("Player"))
                 {
                     playerlastseen.position = player.position; // Update player last seen
-                    SwitchState(new AttackState(muzzleFlashPrefab, shot, gunTransform));
+                   
+
+                    if (!isshooting)
+                    {
+                        SwitchState(new AttackState(muzzleFlashPrefab, shot, gunTransform));
+                        isshooting = true;
+                    }
+
+
+                    // Assign the player's speed to a variable on playerLastSeen
+                    Rigidbody playerRigidbody = player.GetComponent<Rigidbody>();
+                    if (playerRigidbody != null)
+                    {
+                        // Calculate speed as magnitude of velocity
+                        float playerSpeed = playerRigidbody.velocity.magnitude;
+                        playerLastSeenSpeed = playerSpeed; // Store the speed in a variable (add this field to Enemy)
+                    }
                 }
             }
+
         }
     }
 
