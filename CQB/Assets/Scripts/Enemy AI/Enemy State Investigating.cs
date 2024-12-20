@@ -2,7 +2,7 @@ using UnityEngine;
 
 public class InvestigateState : IEnemyState
 {
-    private Vector3 investigationPoint;  // Point where the enemy investigates
+    public Vector3 investigationPoint;  // Point where the enemy investigates
     private float turnSpeed = 2f;        // Speed of turning
     private bool isLookingAround = false;
     private Quaternion initialRotation; // Original head rotation

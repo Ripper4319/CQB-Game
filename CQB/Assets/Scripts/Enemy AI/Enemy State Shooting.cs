@@ -45,10 +45,6 @@ public class AttackState : IEnemyState
         Quaternion targetRotation = Quaternion.LookRotation(directionToPlayer);
         enemy.transform.rotation = Quaternion.Slerp(enemy.transform.rotation, targetRotation, Time.deltaTime * rotationSpeed);
 
-        // Check if the enemy is facing the player (angle check)
-        float angleToPlayer = Vector3.Angle(enemy.transform.forward, directionToPlayer);
-        if (angleToPlayer > 5f) return; // Wait until the enemy is facing the player
-
         // Check if enough time has passed to attack (cooldown)
         if (Time.time - lastAttackTime > attackCooldown)
         {
@@ -60,7 +56,6 @@ public class AttackState : IEnemyState
             else if (shotsFired >= 3)
             {
                 enemy.SwitchState(new ChaseState()); // Switch to ChaseState after 3 shots
-
                 shotsFired = 0;
             }
             else

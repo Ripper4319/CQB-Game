@@ -7,11 +7,12 @@ public class Enemy : MonoBehaviour
     public Transform player;
     public float detectionRange = 10f; // Distance at which the enemy starts detecting the player
     public float attackRange = 2f; // Distance at which the enemy attacks the player
-    public float moveSpeed = 3f; // Movement speed of the enemy
+    public float moveSpeed = 1f; // Movement speed of the enemy
     public Transform Enemybody;
     public Transform head;
     internal object playerlastSeen;
     public float playerLastSeenSpeed;
+    public Animator Animator;
 
     public GameObject muzzleFlashPrefab;
     public GameObject shot;
@@ -31,6 +32,8 @@ public class Enemy : MonoBehaviour
     [SerializeField] private Rigidbody[] rb;
     [SerializeField] private Collider[] colliders;
     [SerializeField] private Animator character;
+
+    public string CurrentStateName => currentState?.GetType().Name ?? "None";
 
 
     private void Start()
@@ -54,7 +57,7 @@ public class Enemy : MonoBehaviour
     {
         currentState.Execute(this); // Execute the current state's behavior
 
-
+        currentState?.Execute(this);
 
 
         // Determine next action based on distance to the player
@@ -107,13 +110,36 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void DetectPlayer()
+    {
+        if (player == null || head == null) return;
+
+        Vector3 directionToPlayer = (player.position - head.position).normalized;
+        float distanceToPlayer = Vector3.Distance(player.position, transform.position);
+        float angleToPlayer = Vector3.Angle(head.forward, directionToPlayer);
+
+        if (distanceToPlayer <= detectionRange && angleToPlayer < 50f)
+        {
+            if (Physics.Raycast(head.position, directionToPlayer, out RaycastHit hit, detectionRange))
+            {
+                if (hit.collider.CompareTag("Player"))
+                {
+                    playerlastseen.position = player.position; // Update player last seen
+                    SwitchState(new AttackState(muzzleFlashPrefab, shot, gunTransform));
+                }
+            }
+        }
+    }
+
     // Method to switch to a new state
     public void SwitchState(IEnemyState newState)
     {
-        currentState.Exit(this); // Exit the current state
-        currentState = newState; // Set the new state
-        currentState.Enter(this); // Enter the new state
+        Debug.Log($"Switching state from {currentState?.GetType().Name ?? "None"} to {newState.GetType().Name}");
+        currentState?.Exit(this);
+        currentState = newState;
+        currentState.Enter(this);
     }
+
 }
 
 
