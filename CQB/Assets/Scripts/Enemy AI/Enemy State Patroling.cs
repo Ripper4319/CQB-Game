@@ -19,11 +19,6 @@ public class PatrolState : IEnemyState
             
             patrolPoint = enemy.transform.position + new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5));
         }
-
-
-       
-
-
        
         enemy.SwitchState(new PatrolState());
         return;
