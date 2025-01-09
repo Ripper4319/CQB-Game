@@ -2,12 +2,12 @@ using UnityEngine;
 
 public class Enemy : MonoBehaviour
 {
-    public IEnemyState currentState; // Current state of the enemy
-    public Transform playerlastseen; // Reference to the playerlastseen
+    public IEnemyState currentState; 
+    public Transform playerlastseen; 
     public Transform player;
-    public float detectionRange = 10f; // Distance at which the enemy starts detecting the player
-    public float attackRange = 2f; // Distance at which the enemy attacks the player
-    public float moveSpeed = 1f; // Movement speed of the enemy
+    public float detectionRange = 10f; 
+    public float attackRange = 2f; 
+    public float moveSpeed = 1f; 
     public Transform Enemybody;
     public Transform head;
     internal object playerlastSeen;
@@ -28,7 +28,6 @@ public class Enemy : MonoBehaviour
     [SerializeField] private float LeftLegMultiplier = 0.75f;
     [SerializeField] private float RightLegMultiplier = 0.75f;
     [SerializeField] private float BellyMultiplier = 1;
-    //[SerializeField] public BodyPart[] bodyPartMapping;
 
     [Header("Enemy ragdoll")]
     [SerializeField] private Rigidbody[] rb;
@@ -40,8 +39,8 @@ public class Enemy : MonoBehaviour
 
     private void Start()
     {
-        currentState = new PatrolState(); // Default state is PatrolState
-        currentState.Enter(this); // Enter the Patrol state at the beginning
+        currentState = new PatrolState(); 
+        currentState.Enter(this); 
 
         foreach (Rigidbody rb in rb)
         {
@@ -57,12 +56,11 @@ public class Enemy : MonoBehaviour
 
     private void Update()
     {
-        currentState.Execute(this); // Execute the current state's behavior
+        currentState.Execute(this); 
 
         currentState?.Execute(this);
 
 
-        // Determine next action based on distance to the player
         float distanceToPlayer = Vector3.Distance(player.position, transform.position);
 
         DetectPlayer();
@@ -84,7 +82,7 @@ public class Enemy : MonoBehaviour
             {
                 if (hit.collider.CompareTag("Player"))
                 {
-                    playerlastseen.position = player.position; // Update player last seen
+                    playerlastseen.position = player.position; 
                    
 
                     if (!isshooting)
@@ -94,13 +92,11 @@ public class Enemy : MonoBehaviour
                     }
 
 
-                    // Assign the player's speed to a variable on playerLastSeen
                     Rigidbody playerRigidbody = player.GetComponent<Rigidbody>();
                     if (playerRigidbody != null)
                     {
-                        // Calculate speed as magnitude of velocity
                         float playerSpeed = playerRigidbody.velocity.magnitude;
-                        playerLastSeenSpeed = playerSpeed; // Store the speed in a variable (add this field to Enemy)
+                        playerLastSeenSpeed = playerSpeed;
                     }
                 }
             }
@@ -108,7 +104,6 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // Method to switch to a new state
     public void SwitchState(IEnemyState newState)
     {
         Debug.Log($"Switching state from {currentState?.GetType().Name ?? "None"} to {newState.GetType().Name}");

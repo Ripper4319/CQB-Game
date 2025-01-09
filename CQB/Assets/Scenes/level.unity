@@ -478,7 +478,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 743821891657870228, guid: 6b5ed537dac3b0f40ae42c7dac6bf649, type: 3}
       propertyPath: m_Name
-      value: Cube (6)
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     - target: {fileID: 6852159204253477424, guid: 6b5ed537dac3b0f40ae42c7dac6bf649, type: 3}
       propertyPath: m_LocalScale.y
@@ -2439,7 +2439,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7238662974503301935, guid: 892a9ecaa2f71c64a9aa84a39eef81ea, type: 3}
       propertyPath: m_Name
-      value: Cube 1 (1)
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 9000676205797871990, guid: 892a9ecaa2f71c64a9aa84a39eef81ea, type: 3}
@@ -2753,7 +2753,7 @@ Transform:
   m_GameObject: {fileID: 1034790792}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 4.26, y: 0.5, z: 0}
+  m_LocalPosition: {x: 9.84, y: 0.6, z: -2.1}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -2781,6 +2781,7 @@ MonoBehaviour:
   head: {fileID: 1940573453}
   playerLastSeenSpeed: 0
   Animator: {fileID: 0}
+  isshooting: 0
   muzzleFlashPrefab: {fileID: 299742238984793876, guid: ddde71bdc105f4840acfd4fcf3239671, type: 3}
   shot: {fileID: 2770885537797968350, guid: 339bc5b848a2e0d48affc42687ccf60b, type: 3}
   gunTransform: {fileID: 1367278977}
@@ -3581,7 +3582,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1052069200829075981, guid: 55d29c92ed851b644b54397d63eecff2, type: 3}
       propertyPath: m_Name
-      value: Cube (2)
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     - target: {fileID: 3709634563059453473, guid: 55d29c92ed851b644b54397d63eecff2, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5218,7 +5219,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 743821891657870228, guid: 6b5ed537dac3b0f40ae42c7dac6bf649, type: 3}
       propertyPath: m_Name
-      value: Cube (3)
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     - target: {fileID: 6852159204253477424, guid: 6b5ed537dac3b0f40ae42c7dac6bf649, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5275,7 +5276,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4324601705436427446, guid: c0792e992b7623f4689ae8bd912760c7, type: 3}
       propertyPath: m_Name
-      value: Cube (1)
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     - target: {fileID: 6821759551094223837, guid: c0792e992b7623f4689ae8bd912760c7, type: 3}
       propertyPath: m_LocalPosition.x
@@ -5992,7 +5993,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7238662974503301935, guid: 892a9ecaa2f71c64a9aa84a39eef81ea, type: 3}
       propertyPath: m_Name
-      value: Cube 1
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -6211,7 +6212,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4324601705436427446, guid: c0792e992b7623f4689ae8bd912760c7, type: 3}
       propertyPath: m_Name
-      value: Cube (4)
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     - target: {fileID: 6821759551094223837, guid: c0792e992b7623f4689ae8bd912760c7, type: 3}
       propertyPath: m_LocalScale.y
@@ -6273,7 +6274,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1052069200829075981, guid: 55d29c92ed851b644b54397d63eecff2, type: 3}
       propertyPath: m_Name
-      value: Cube (5)
+      value: 'Obsticles '
       objectReference: {fileID: 0}
     - target: {fileID: 3709634563059453473, guid: 55d29c92ed851b644b54397d63eecff2, type: 3}
       propertyPath: m_LocalScale.y

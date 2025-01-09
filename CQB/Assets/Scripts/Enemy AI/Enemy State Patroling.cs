@@ -16,7 +16,7 @@ public class PatrolState : IEnemyState
 
         if (Vector3.Distance(enemy.transform.position, patrolPoint) < 0.5f)
         {
-            // After a short time, choose a new patrol point
+            
             patrolPoint = enemy.transform.position + new Vector3(Random.Range(-5, 5), 0, Random.Range(-5, 5));
         }
 
@@ -24,7 +24,7 @@ public class PatrolState : IEnemyState
        
 
 
-        // Otherwise, transition to the Patrol state
+       
         enemy.SwitchState(new PatrolState());
         return;
 
