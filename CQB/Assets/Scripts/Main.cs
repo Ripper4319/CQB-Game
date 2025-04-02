@@ -18,6 +18,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isGrounded;
     public Camera camera;
     public Transform Camera;
+    public static bool isPaused = false;
 
 
     [Header("Aiming")]
@@ -35,7 +36,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector3 targetPosition;
 
 
-    [Header("leaning")]
+    [Header("Leaning")]
     public float leanAmount = 100f;
     public float leanAmount1 = 100f;
     public float leanSpeed = 5f;
@@ -91,6 +92,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (isPaused) return;
+
         if (controller == null) return;
 
         float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity;
